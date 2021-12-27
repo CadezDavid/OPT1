@@ -40,17 +40,18 @@ vector<int> bfs(vector<vector<int>> adj_matrix, int start, int target) {
   return path;
 }
 
-int ford_fulkerson(vector<vector<int>> adj_matrix, int s, int t) {
-  int flow = 0;
+vector<vector<int>> ford_fulkerson(vector<vector<int>> adj_matrix, int s, int t) {
   int size = adj_matrix.size();
+  vector<vector<int>> flow(size, vector<int>(size, 0));
 
   vector<int> path = bfs(adj_matrix, s, t);
   while (!path.empty()) {
     for (int i = 0; i < path.size() - 1; i++) {
       adj_matrix[path[i]][path[i + 1]]--;
       adj_matrix[path[i + 1]][path[i]]++;
+      flow[path[i]][path[i + 1]]++;
+      flow[path[i + 1]][path[i]]--;
     }
-    flow++;
     path = bfs(adj_matrix, s, t);
   }
 

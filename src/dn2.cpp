@@ -26,8 +26,12 @@ int main() {
   adj_matrix[2 * size][2 * u] = 1;
   adj_matrix[2 * size][2 * v] = 1;
 
-  int max_flow = ford_fulkerson(adj_matrix, 2 * size, 2 * w);
-  if (max_flow == 2)
+  vector<vector<int>> flow = ford_fulkerson(adj_matrix, 2 * size, 2 * w);
+  int flow_sum;
+  for (int i = 0; i < 2 * size + 1; i++)
+    flow_sum += adj_matrix[2 * size][i];
+
+  if (flow_sum == 2)
     cout << "Obstaja pot med u (" << u << ") in v (" << v
          << "), ki gre skozi w (" << w << ")" << endl;
   else
