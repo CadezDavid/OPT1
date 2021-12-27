@@ -23,9 +23,12 @@ vector<int> bfs(vector<vector<int>> adj_matrix, int start, int target) {
       if (!visited[nb] && adj_matrix[curr][nb] > 0) {
         q.push(nb);
         ancestor[nb] = curr;
+        if (nb == target)
+          goto find_path;
       }
     }
   }
+find_path:
 
   if (!visited[target])
     return {};
@@ -40,7 +43,8 @@ vector<int> bfs(vector<vector<int>> adj_matrix, int start, int target) {
   return path;
 }
 
-vector<vector<int>> ford_fulkerson(vector<vector<int>> adj_matrix, int s, int t) {
+vector<vector<int>> ford_fulkerson(vector<vector<int>> adj_matrix, int s,
+                                   int t) {
   int size = adj_matrix.size();
   vector<vector<int>> flow(size, vector<int>(size, 0));
 
