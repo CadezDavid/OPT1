@@ -1,15 +1,27 @@
 #include <algorithm>
+#include <assert.h>
 #include <iostream>
 #include <queue>
+#include <stack>
 #include <vector>
 
 using namespace std;
 
-vector<int> bfs(vector<vector<int>> adj_matrix, int start, int target) {
-  const int size = adj_matrix.size();
+#define MAX(x, y) (x < y ? y : x)
+#define MIN(x, y) (x > y ? y : x)
+
+typedef struct {
+  int length;
+  int *path;
+  int value;
+} path;
+
+path find_path(int **adj_matrix, const int size, int start, int target) {
   queue<int> q;
-  vector<bool> visited(size, false);
-  vector<int> ancestor(size);
+
+  bool *visited = new bool[size]{};
+
+  int *ancestor = new int[size]{};
   for (int i = 0; i < size; i++)
     ancestor[i] = -1;
 
@@ -28,35 +40,56 @@ vector<int> bfs(vector<vector<int>> adj_matrix, int start, int target) {
       }
     }
   }
+
 find_path:
+  path p;
+  stack<int> s;
 
-  if (!visited[target])
-    return {};
+  if (ancestor[target] == -1) {
+    p.length = 0;
+    return p;
+  }
 
-  vector<int> path;
   while (target != start) {
-    path.push_back(target);
+    s.push(target);
     target = ancestor[target];
   }
-  path.push_back(start);
-  reverse(path.begin(), path.end());
-  return path;
+  s.push(start);
+
+  p.path = new int[s.size()]{};
+  p.length = s.size();
+  int i = 0;
+  int value = INT16_MAX;
+  while (!s.empty()) {
+    p.path[i] = s.top();
+    s.pop();
+    if (0 < i) {
+      int a = p.path[i - 1];
+      int b = p.path[i];
+      value = MIN(value, adj_matrix[a][b]);
+    }
+    i++;
+  }
+  p.value = value;
+
+  return p;
 }
 
-vector<vector<int>> ford_fulkerson(vector<vector<int>> adj_matrix, int s,
-                                   int t) {
-  int size = adj_matrix.size();
-  vector<vector<int>> flow(size, vector<int>(size, 0));
+int **ford_fulkerson(int **adj_matrix, const int size, int s, int t) {
+  int **flow = new int *[size] {};
+  for (int i = 0; i < size; i++)
+    flow[i] = new int[size]{};
 
-  vector<int> path = bfs(adj_matrix, s, t);
-  while (!path.empty()) {
-    for (int i = 0; i < path.size() - 1; i++) {
-      adj_matrix[path[i]][path[i + 1]]--;
-      adj_matrix[path[i + 1]][path[i]]++;
-      flow[path[i]][path[i + 1]]++;
-      flow[path[i + 1]][path[i]]--;
+  path p = find_path(adj_matrix, size, s, t);
+  while (p.length > 0) {
+    for (int i = 0; i < p.length - 1; i++) {
+      int a = p.path[i];
+      int b = p.path[i + 1];
+      adj_matrix[a][b] -= p.value;
+      adj_matrix[b][a] += p.value;
+      flow[a][b] += p.value;
     }
-    path = bfs(adj_matrix, s, t);
+    p = find_path(adj_matrix, size, s, t);
   }
 
   return flow;
