@@ -14,7 +14,7 @@ int main() {
   for (int row = 0; row < 2 * size + 1; row++)
     adj_matrix[row] = new int[2 * size + 1];
 
-  int x, y, c;
+  int x, y;
   while (ifs >> x >> y) {
     adj_matrix[2 * x + 1][2 * y] = 1;
     adj_matrix[2 * y + 1][2 * x] = 1;
@@ -33,11 +33,9 @@ int main() {
     flow_sum += flow[2 * size][i];
 
   if (flow_sum == 2)
-    cout << "Obstaja pot med u (" << u << ") in v (" << v
-         << "), ki gre skozi w (" << w << ")" << endl;
+    printf("Obstaja pot med u (%i) in v (%i), ki gre skozi w (%i)\n", u, v, w);
   else
-    cout << "Ni poti med u (" << u << ") in v (" << v << "), ki gre skozi w ("
-         << w << ")" << endl;
+    printf("Ni poti med u (%i) in v (%i), ki gre skozi w (%i)\n", u, v, w);
 
   return 0;
 }

@@ -1,9 +1,6 @@
-#include <algorithm>
-#include <assert.h>
 #include <iostream>
 #include <queue>
 #include <stack>
-#include <vector>
 
 using namespace std;
 
@@ -76,20 +73,29 @@ find_path:
 }
 
 int **ford_fulkerson(int **adj_matrix, const int size, int s, int t) {
+
+  int **tmp_adj_matrix = new int *[size] {};
+  for (int i = 0; i < size; i++) {
+    tmp_adj_matrix[i] = new int[size]{};
+    for (int j = 0; j < size; j++)
+      tmp_adj_matrix[i][j] = adj_matrix[i][j];
+  }
+
   int **flow = new int *[size] {};
   for (int i = 0; i < size; i++)
     flow[i] = new int[size]{};
 
-  path p = find_path(adj_matrix, size, s, t);
+  path p = find_path(tmp_adj_matrix, size, s, t);
   while (p.length > 0) {
     for (int i = 0; i < p.length - 1; i++) {
       int a = p.path[i];
       int b = p.path[i + 1];
-      adj_matrix[a][b] -= p.value;
-      adj_matrix[b][a] += p.value;
+      tmp_adj_matrix[a][b] -= p.value;
+      tmp_adj_matrix[b][a] += p.value;
       flow[a][b] += p.value;
+      flow[a][b] -= p.value;
     }
-    p = find_path(adj_matrix, size, s, t);
+    p = find_path(tmp_adj_matrix, size, s, t);
   }
 
   return flow;
